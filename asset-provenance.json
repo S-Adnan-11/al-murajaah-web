@@ -1,0 +1,81 @@
+{
+  "date": "2026-10-20",
+  "appCommit": "a476f3c8bbd22cfbff55c06dc5bd98ef0605031f",
+  "screenshots": "Released Android 1.0.1+36; disposable emulator demonstration data. No physical-device screenshot claim.",
+  "assets": [
+    {
+      "source": "screenshots/catalogue-light.png",
+      "output": "dist/assets/catalogue-light.webp",
+      "sha256": "8191f232523842c8053fb709c06817fc37b81e404437414009e5a25a9b9789fd"
+    },
+    {
+      "source": "screenshots/catalogue-light.png",
+      "output": "dist/assets/catalogue-light-small.webp",
+      "sha256": "8191f232523842c8053fb709c06817fc37b81e404437414009e5a25a9b9789fd"
+    },
+    {
+      "source": "screenshots/passage-light.png",
+      "output": "dist/assets/passage-light.webp",
+      "sha256": "c5add22cdcf06beed3ab94d2020766d4a2cb41e301580be53d0c2e9fac1e4d07"
+    },
+    {
+      "source": "screenshots/passage-light.png",
+      "output": "dist/assets/passage-light-small.webp",
+      "sha256": "c5add22cdcf06beed3ab94d2020766d4a2cb41e301580be53d0c2e9fac1e4d07"
+    },
+    {
+      "source": "screenshots/library-dark.png",
+      "output": "dist/assets/library-dark.webp",
+      "sha256": "0cd3d16db0b9040567afb6a9af58c68cf11e33d69d3411922e0e4943586e486b"
+    },
+    {
+      "source": "screenshots/library-dark.png",
+      "output": "dist/assets/library-dark-small.webp",
+      "sha256": "0cd3d16db0b9040567afb6a9af58c68cf11e33d69d3411922e0e4943586e486b"
+    },
+    {
+      "source": "screenshots/activity-dark.png",
+      "output": "dist/assets/activity-dark.webp",
+      "sha256": "7f84732836cb6df29c0e3a6e3dc101c6a3581c0b749a8d107698e77a44413531"
+    },
+    {
+      "source": "screenshots/activity-dark.png",
+      "output": "dist/assets/activity-dark-small.webp",
+      "sha256": "7f84732836cb6df29c0e3a6e3dc101c6a3581c0b749a8d107698e77a44413531"
+    },
+    {
+      "source": "screenshots/repeat-dark.png",
+      "output": "dist/assets/repeat-dark.webp",
+      "sha256": "82baf420958fb2a05a55c12b7d5fbf42d56199ce5190be351207495027961594"
+    },
+    {
+      "source": "screenshots/repeat-dark.png",
+      "output": "dist/assets/repeat-dark-small.webp",
+      "sha256": "82baf420958fb2a05a55c12b7d5fbf42d56199ce5190be351207495027961594"
+    },
+    {
+      "source": "assets/brand/4.0x/main-blue.png",
+      "output": "dist/assets/calligraphy.webp",
+      "sha256": "90cc509317cf0ec1be96fc08a8084549090992cc0ee044ec484434c940d169ee"
+    },
+    {
+      "source": "assets/brand/4.0x/wordmark-white.png",
+      "output": "dist/assets/wordmark-white.webp",
+      "sha256": "09b37cacbc084bfab8a3cc118bb6d116e86fef891b42d8626de2ad02a0a64a13"
+    },
+    {
+      "source": "assets/brand/4.0x/wordmark-ink.png",
+      "output": "dist/assets/wordmark-ink.webp",
+      "sha256": "1757393113f45ae44f14bb2a057d92a7a54d0de6b6a468da608b19d4ebd6b7d4"
+    }
+  ],
+  "homeReminderSource": "lib/core/theme/home_reading.dart: HomeReading.english / HomeReading.arabic; exact strings retained",
+  "font": "assets/fonts/cairo/Cairo-Variable.ttf (unmodified; bundled OFL notice)",
+  "sharingImage": "Original static composition using approved calligraphy; generated with Sharp outside website runtime",
+  "finalTransforms": {
+    "screenshots": "400px and original 480px widths, WebP; no enlargement, original 1:2 aspect retained",
+    "icons": "Contained within square navy canvases; no stretching",
+    "share": "1200×630 composition; calligraphy resized by width, uncropped",
+    "storeControls": "Original generic shopping-bag and phone outlines; no official store logo/badge"
+  }
+}
