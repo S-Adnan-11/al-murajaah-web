@@ -77,5 +77,27 @@
     "icons": "Contained within square navy canvases; no stretching",
     "share": "1200×630 composition; calligraphy resized by width, uncropped",
     "storeControls": "Original generic shopping-bag and phone outlines; no official store logo/badge"
-  }
+  },
+  "websiteScreenshots": [
+    {
+      "output": "docs/screenshots/desktop.webp",
+      "sourceUrl": "https://al-murajaah.devs.surf/",
+      "capturedAt": "2026-10-21T00:30:46.180Z",
+      "width": 1440,
+      "height": 1050,
+      "browser": "Headless Chrome, anonymous isolated profile",
+      "device": "1440px desktop viewport",
+      "sha256": "e158e3a95d8363861183f45ef8624575bc6b2ad984697c0430ca45cf1d53793e"
+    },
+    {
+      "output": "docs/screenshots/mobile.webp",
+      "sourceUrl": "https://al-murajaah.devs.surf/",
+      "capturedAt": "2026-10-21T00:30:46.180Z",
+      "width": 390,
+      "height": 1350,
+      "browser": "Headless Chrome, anonymous isolated profile",
+      "device": "390px device emulation; not physical hardware",
+      "sha256": "8482fa4d6fc2b50e1d27906d01a02ce8e0017be5137918f27fdb295e2d4f6e57"
+    }
+  ]
 }

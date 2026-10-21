@@ -1,35 +1,43 @@
-# Static hosting and search handoff
+# Hosting and search maintenance
 
-Prepared 2026-10-20. Production target: https://al-murajaah.devs.surf/. Host and website repository are not selected/provided. Nothing has been deployed or registered by this task. Do not assume ownership of devs.surf or another project's host.
+The live website is **https://al-murajaah.devs.surf/**. Source: [S-Adnan-11/al-murajaah-web](https://github.com/S-Adnan-11/al-murajaah-web). Cloudflare Pages deploys the static website through its GitHub integration.
 
-## Once the owner selects a host
+## Deployment
 
-1. Review the source inventory and create/connect the separately supplied website repository only with authorization. Use a static host that supports a custom subdomain, HTTPS, correct MIME types and custom HTTP 404. There is no build command; publish directory is dist. Avoid SPA catch-all rewrites to index.html.
-2. Deploy a preview deliberately, test its paths and error statuses, then attach the exact custom domain al-murajaah.devs.surf in that host. Record the host project identifier and recovery/admin location privately. A separate preview hostname should not become the canonical production URL. If a staging noindex header is used, remove it on production.
-3. Ask the subdomain/DNS administrator to set the exact CNAME, A/AAAA or delegated-zone records supplied by the selected host. Do not guess targets, change parent/apex records or copy another project's configuration. Set any ownership record exactly as provided. If a conflicting CNAME exists, coordinate with its owner; do not overwrite it speculatively.
-4. Wait for DNS and certificate validation. Redirect HTTP to HTTPS and any selected alternate hostname to the single canonical URL. Serve / and /notices.html as 200; /missing-page and /assets/missing.png as **404**, rendering 404.html for human navigation. Never rewrite missing JS/CSS/images to 200 HTML. Keep assets' MIME types correct (text/css, text/javascript, font/ttf, image/webp, image/png), XML and robots text accessible. The preview server demonstrates status behavior; it is not a production server.
-5. Ensure the landing page, notices, images, CSS, font, robots.txt and sitemap.xml have no authentication/challenge gate, robots block, accidental noindex or X-Robots-Tag restriction. No cookie banner is needed for the current site. Review the actual host's logging/privacy terms before publication and update privacy text if that host adds processing beyond ordinary access logs. Do not enable injected analytics.
-6. Prefer short revalidation for HTML, CSS and JS because filenames are not content hashed. Only use immutable long caching after adding versioned filenames. Optional response hardening: X-Content-Type-Options nosniff and Referrer-Policy strict-origin-when-cross-origin. Any CSP must permit same-origin fonts/styles/scripts and the inline JSON-LD; validate it before enforcing. No third-party scripts are required.
-7. Check the actual direct APK anchor/redirect and release fallback; retain the downloadable checksum. Test on an actual Android phone and inspect sharing previews. Never interpret a CTA click as successful delivery. Keep release.json aligned with static markup using tools/release.mjs and checks.
+| Setting | Value |
+| --- | --- |
+| Production branch | `main` |
+| Framework preset | None |
+| Build command | Empty |
+| Root directory | Repository root |
+| Output directory | `dist` |
+| Runtime secrets or environment variables | None |
 
-## Search Console
+Source documentation, tools and README screenshots stay outside the served directory. No Node process runs in production. Keep the existing Git integration; main pushes trigger production builds. To use another static host, publish `dist/` and preserve HTTPS, MIME types and genuine HTTP404 responses. Do not add a catch-all rewrite to the homepage.
 
-Use an owner-controlled Google account. A URL-prefix property **https://al-murajaah.devs.surf/** can use an HTML verification file at its exact supplied path or the exact supplied meta tag in the home page head, if offered. No parent-domain control is needed for those website-based methods. Keep the file/tag after verification.
+Cloudflare Pages redirects `/index.html` and `/index` to `/`, and `/notices.html` to `/notices`. The notices canonical and sitemap use the final extensionless URL. The provider hostname serves the same HTML with the production canonical and site name; it is absent from the sitemap. Query-string homepage variants also declare the production root canonical. Do not point canonical, Open Graph, sharing-image or WebSite URLs at a provider hostname or local preview.
 
-A Domain property **al-murajaah.devs.surf** requires the relevant DNS verification record and access/cooperation from whoever controls this subdomain's DNS. Do not claim control of devs.surf. Select only a method actually offered for the property and permissions available. If an existing verified parent-property owner can grant appropriate access, coordinate with them. No analytics or Tag Manager needs to be added for verification.
+When attaching a different custom domain, register it with the host first, then use that project’s actual provider-supplied DNS target. Do not change the parent domain’s nameservers to configure a subdomain. See [Cloudflare custom domains](https://developers.cloudflare.com/pages/configuration/custom-domains/). Account recovery, credentials and deployment evidence belong outside the public repository.
 
-The owner must supply the actual Google verification HTML file contents/name, meta value or DNS record received in Search Console. No placeholder verification token is installed. Verify ownership after production is reachable, submit https://al-murajaah.devs.surf/sitemap.xml, then use URL Inspection for the canonical home page: test the live URL, review rendered content/canonical/indexability and request indexing if eligible. Inspect notices.html as needed. Recheck the indexing report after processing. The sitemap contains only these two real pages; the 404 and download asset are excluded. No invented lastmod dates, ratings or reviews are used.
+## Production checks
 
-Indexing, ranking, rich results and processing time are not guaranteed. Keep useful readable HTML and accessible assets. Documentation: [ownership methods](https://support.google.com/webmasters/answer/9008080), [sitemaps](https://developers.google.com/search/docs/crawling-indexing/sitemaps/build-sitemap), [URL Inspection](https://support.google.com/webmasters/answer/9012289).
+- Fetch the homepage as meaningful initial HTML with HTTP200. Preserve existing Search Console verification files/tags and DNS ownership records; no verification token is generated by this project.
+- Check HTTP-to-HTTPS redirects, homepage variants, production canonicals, page titles and a single authoritative WebSite JSON-LD node. Preserve truthful SoftwareApplication data. Validate site-name markup with [Schema Markup Validator](https://validator.schema.org/); Google’s Rich Results Test does not support the site-name feature.
+- Keep the stable `/assets/icon-192.png` PNG declared in initial HTML, alongside the smaller browser icon and Apple touch icon. Icons, sharing images, screenshots and bundled font must return200 with their real MIME types and no authentication, challenge or HTML fallback.
+- Serve `/robots.txt` as plain text, allowing public pages and pointing to `https://al-murajaah.devs.surf/sitemap.xml`. Serve the sitemap as XML with only canonical, indexable pages: `/` and `/notices`. Do not list downloads, provider URLs, private files or missing pages.
+- Test a missing route and missing asset: both must return404. Check that indexable pages have no robots `noindex` directive or `X-Robots-Tag: noindex` header.
+- Keep the direct APK anchor and release fallback working. A successful HEAD redirect does not prove that a visitor’s download finished. Check real sharing previews and physical devices separately from emulation.
 
-## Required owner decisions and values
+If one tool receives403/error1010 while browsers or other clients return200, record the UTC time, URL, user agent and Cloudflare Ray ID. [Error1010](https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-1xxx-errors/error-1010/) concerns the request’s browser signature. Compare client environments and use the owner’s Search Console live test before concluding that Google is blocked. A spoofed Googlebot user agent is not verified Googlebot. Review the matching security event or ask the responsible zone administrator; do not broadly disable security or add crawl blocks.
 
-- Website repository URL and explicit publication instruction.
-- Chosen static host/account/project and permission to deploy and attach this subdomain.
-- DNS administrator or delegated DNS access; exact provider-supplied records.
-- Search Console property/account and its real verification value/file (after creation).
-- Review of desktop/mobile captures and, when hosted, physical-device and sharing acceptance.
+## Search Console: test without submitting
 
-## Recovery
+1. Open the existing property in [Search Console](https://search.google.com/search-console/). Enter `https://al-murajaah.devs.surf/` in the URL Inspection bar.
+2. Select **Test live URL**, wait for completion, and expand **Page availability**. Check **Crawl allowed? Yes**, **Page fetch: Successful** and **Indexing allowed? Yes**, plus any reported robots, HTTP, security or resource errors. A property being added alone does not prove ownership verification or crawl access.
+3. Select **View tested page → HTML**. Find one WebSite node named **Al-Murāja’ah**, the production homepage URL and alternate names. Check the preferred name in the title and og:site_name, one production canonical, the 192px icon link, readable initial content and the original English/Arabic reminder. Confirm that the returned document is the website, not a Cloudflare error or challenge page.
+4. Review **Screenshot** and **More info** for loaded/blocked resources and HTTP details. The font, CSS, images and script should load. Repeat the live test for `https://al-murajaah.devs.surf/notices`. Check Search Console’s robots.txt report for fetch status if available. Open the robots, sitemap and icon URLs directly as an additional access check.
+5. Keep the existing verification method intact. A live test does not determine Google’s selected canonical; that field belongs to the indexed-URL report. Check it there after Google has processed the page.
 
-Clone the website repository once it exists, restore this source tree and serve dist unchanged; no secret is required to run the site. Sign in anew to the hosting/GitHub/DNS/Search Console owner accounts, using the owner's independent account recovery. Source files cannot recover dashboard-only access. Record host-specific project IDs and DNS instructions privately once known. Preserve the reviewed website source in the private additive backup until a repository and independent encrypted copy are verified. Never deploy the private backup.
+These instructions do not submit a sitemap or request indexing. When doing that separately, the sitemap address is `https://al-murajaah.devs.surf/sitemap.xml`. A sitemap aids discovery; it is not the switch that starts crawling. Site names, favicon appearance, indexing and ranking remain Google’s decisions and are not guaranteed.
+
+References: [site names](https://developers.google.com/search/docs/appearance/site-names), [favicons](https://developers.google.com/search/docs/appearance/favicon-in-search), [URL Inspection](https://support.google.com/webmasters/answer/9012289).
