@@ -38,8 +38,8 @@ In [repository environments](https://github.com/S-Adnan-11/al-murajaah-web/setti
 
 | Secret name | Value to enter privately in GitHub |
 | --- | --- |
-| `CLOUDFLARE_API_TOKEN` | The custom Cloudflare API token above. |
-| `CLOUDFLARE_ACCOUNT_ID` | The account ID of the existing Pages project. |
+| `ART_INTL_CLOUDFLARE_API_TOKEN` | The custom Cloudflare API token above. |
+| `ART_INTL_CLOUDFLARE_ACCOUNT_ID` | The account ID of the existing Pages project. |
 
 Never paste either value into source, commits, issues, logs or chat. No manually configured GitHub token is needed. No credential belongs in `dist/`, and visitors receive no secrets. Rotate the API token by replacing the environment secret when it expires or is revoked.
 
