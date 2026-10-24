@@ -74,9 +74,29 @@
   "sharingImage": "Original static composition using approved calligraphy; generated with Sharp outside website runtime",
   "finalTransforms": {
     "screenshots": "400px and original 480px widths, WebP; no enlargement, original 1:2 aspect retained",
-    "icons": "Contained within square navy canvases; no stretching",
+    "icons": "Original main-blue.png alpha silhouette recoloured white on fully opaque #071322 squares; tight transparent bounds uniformly contained in 80% of each canvas; no stretching or redrawing. See faviconRevision and docs/favicon/README.md.",
     "share": "1200×630 composition; calligraphy resized by width, uncropped",
     "storeControls": "Original generic shopping-bag and phone outlines; no official store logo/badge"
+  },
+  "faviconRevision": {
+    "date": "2026-10-24",
+    "source": "assets/brand/4.0x/main-blue.png",
+    "sourceCopy": "docs/favicon/main-blue.png",
+    "sourceSha256": "90cc509317cf0ec1be96fc08a8084549090992cc0ee044ec484434c940d169ee",
+    "sourceDimensions": "512x443",
+    "sourceAlphaBounds": {"left": 36, "top": 35, "width": 440, "height": 373},
+    "generator": "tools/favicon.mjs (Sharp 0.35.5; development only)",
+    "outputs": ["dist/assets/icon-32.png", "dist/assets/icon-180.png", "dist/assets/icon-192.png", "dist/assets/icon-512.png"],
+    "previews": ["docs/favicon/comparison-32.png", "docs/favicon/comparison-192.png"],
+    "beforeAssets": "docs/favicon/before/; original 32px and 192px artwork retained for comparison",
+    "contrast": "White/#071322 solid-colour contrast 18.66:1; antialiased edge pixels have lower contrast",
+    "outputSha256": {
+      "dist/assets/icon-32.png": "9cb8250209e93a887e32e555286291f897bce4ea942f764d903c2f643215272d",
+      "dist/assets/icon-180.png": "4cdf0643121ff1712f559beb41bc8b3f467dafff856483ddf5e5c710f9892a0a",
+      "dist/assets/icon-192.png": "4326fe2e067535a5f0f020268610d062f5b04b2909b435066fefcb84680e090d",
+      "dist/assets/icon-512.png": "a21d19b7e58465cbe5f7d728e0b4fb2d89fc31d6b619d12e2b4fcb5b95b36ce7"
+    },
+    "scope": "Existing icon URLs retained. Homepage artwork, naming, metadata, schema, CSS, JavaScript and download links unchanged."
   },
   "websiteScreenshots": [
     {
