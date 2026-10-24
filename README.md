@@ -18,7 +18,7 @@
   <a href="https://pages.cloudflare.com/"><img alt="Cloudflare Pages" src="https://img.shields.io/badge/Cloudflare_Pages-F38020?logo=cloudflarepages&amp;logoColor=white"></a>
 </p>
 
-This repository contains the download and showcase website for **Al-Murāja’ah (المراجعة)**. The app’s player, recordings and local library live in the [separate mobile project](https://github.com/S-Adnan-11/al-murajaah). The website runs on plain HTML, CSS and JavaScript, hosted on Cloudflare Pages through its GitHub integration.
+This repository contains the download and showcase website for **Al-Murāja’ah (المراجعة)**. The app’s player, recordings and local library live in the [separate mobile project](https://github.com/S-Adnan-11/al-murajaah). The website runs on plain HTML, CSS and JavaScript, hosted on Cloudflare Pages with manually dispatched GitHub Actions deployments.
 
 [Features](#features) · [Preview](#preview-and-validation) · [Structure](#directory-map) · [Release updates](#updating-the-download) · [Contributing](#contributing)
 
@@ -49,7 +49,7 @@ This repository contains the download and showcase website for **Al-Murāja’ah
 | CSS | Responsive layout, themes, typography and restrained animation. |
 | JavaScript | Theme choice, reminder timing and accessible store-status messages. |
 | Node.js 22+ | Development-only preview, validation and release-metadata scripts using built-in modules. |
-| Cloudflare Pages | Static hosting, HTTPS and production deployments from GitHub’s main branch. |
+| Cloudflare Pages | Static hosting, HTTPS and manual production deployments of GitHub’s main branch. |
 
 There is no application server, bundler, framework or runtime package dependency. Flutter belongs to the Android app, not this website.
 
@@ -104,7 +104,7 @@ The download remains a normal anchor to GitHub. Browser/device settings may show
 
 Open an [issue](https://github.com/S-Adnan-11/al-murajaah-web/issues) or a focused pull request here for website improvements. For app behavior or recording issues, use the [feedback tracker](https://github.com/S-Adnan-11/al-murajaah-feedback/issues). Explain the change, run the checks and include screenshots for visible changes. Keep the static runtime small and preserve language, accessibility and download behavior.
 
-Never include credentials, diagnostic logs, personal data, signing material, APKs or private recovery documents. Production changes to main deploy automatically through Pages, so check the final diff and deployed responses. Preserve any existing Search Console verification file, meta tag or DNS record.
+Never include credentials, diagnostic logs, personal data, signing material, APKs or private recovery documents. Production deploys only when you manually run the **Deploy website** workflow on `main`; see [HOSTING.md](HOSTING.md) for setup and verification. Check the final diff and deployed responses. Preserve any existing Search Console verification file, meta tag or DNS record.
 
 ## Licensing and assets
 

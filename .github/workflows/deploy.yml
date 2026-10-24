@@ -1,0 +1,82 @@
+name: Deploy website
+run-name: Deploy main at ${{ github.sha }}
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cloudflare-pages-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to production
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: production
+      url: https://al-murajaah.devs.surf/
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out the dispatched commit
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22'
+          package-manager-cache: false
+
+      - name: Check website and JavaScript
+        run: |
+          node tools/check.mjs
+          node --check dist/app.js
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+
+      - name: Verify existing Pages project and manual deployment settings
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          node --input-type=module <<'NODE'
+          import assert from 'node:assert/strict';
+          const { CLOUDFLARE_API_TOKEN: token, CLOUDFLARE_ACCOUNT_ID: account } = process.env;
+          assert(token && account, 'Configure CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID in the production environment.');
+          const response = await fetch(
+            `https://api.cloudflare.com/client/v4/accounts/${encodeURIComponent(account)}/pages/projects/al-murajaah-web`,
+            { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(30000) }
+          );
+          assert(response.ok, `Cloudflare project lookup failed (HTTP ${response.status}); check credentials and account access.`);
+          const data = await response.json();
+          assert(data.success && data.result, 'Cloudflare project lookup did not succeed.');
+          const project = data.result;
+          assert.equal(project.name, 'al-murajaah-web', 'Use the existing Pages project.');
+          assert.equal(project.production_branch, 'main', 'The Pages production branch must remain main.');
+          assert(project.domains?.includes('al-murajaah.devs.surf'), 'The existing production domain must belong to this project.');
+          assert.equal(project.source?.config?.production_deployments_enabled, false, 'Disable automatic production deployments in Cloudflare and save.');
+          assert.equal(project.source?.config?.preview_deployment_setting, 'none', 'Set automatic preview deployments to None in Cloudflare and save.');
+          console.log('Verified existing production project, domain, branch, and disabled automatic deployments.');
+          NODE
+
+      # GitHub records this environment job and its result automatically.
+      # Use the CLI directly; do not create a second deployment via an action/API.
+      - name: Deploy the checked commit to Cloudflare Pages
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WRANGLER_SEND_METRICS: 'false'
+        run: >-
+          npx --yes wrangler@4.152.0 pages deploy dist
+          --project-name=al-murajaah-web
+          --branch=main
+          --commit-hash="$GITHUB_SHA"
+          --commit-dirty=false

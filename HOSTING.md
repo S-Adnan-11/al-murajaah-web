@@ -1,19 +1,57 @@
 # Hosting and search maintenance
 
-The live website is **https://al-murajaah.devs.surf/**. Source: [S-Adnan-11/al-murajaah-web](https://github.com/S-Adnan-11/al-murajaah-web). Cloudflare Pages deploys the static website through its GitHub integration.
+The live website is **https://al-murajaah.devs.surf/**. Source: [S-Adnan-11/al-murajaah-web](https://github.com/S-Adnan-11/al-murajaah-web). The **Deploy website** GitHub Actions workflow uploads the static website to the existing Cloudflare Pages project only when manually dispatched.
 
 ## Deployment
 
 | Setting | Value |
 | --- | --- |
+| Existing Pages project | `al-murajaah-web` |
 | Production branch | `main` |
 | Framework preset | None |
 | Build command | Empty |
 | Root directory | Repository root |
 | Output directory | `dist` |
 | Runtime secrets or environment variables | None |
+| Deployment trigger | GitHub Actions `workflow_dispatch` only |
+| GitHub environment | `production`, URL `https://al-murajaah.devs.surf/` |
+| Cloudflare automatic production deployments | Disabled |
+| Cloudflare automatic preview deployments | None |
 
-Source documentation, tools and README screenshots stay outside the served directory. No Node process runs in production. Keep the existing Git integration; main pushes trigger production builds. To use another static host, publish `dist/` and preserve HTTPS, MIME types and genuine HTTP404 responses. Do not add a catch-all rewrite to the homepage.
+Source documentation, tools and README screenshots stay outside the served directory. No Node process runs in production. Keep the existing Pages project, Git connection and custom domain, with Cloudflare's automatic deployments disabled. Uploading with Wrangler works with an existing Git-integrated Pages project; do not create a replacement project or migrate it to Workers. To use another static host, publish `dist/` and preserve HTTPS, MIME types and genuine HTTP404 responses. Do not add a catch-all rewrite to the homepage.
+
+### One-time dashboard setup
+
+1. In [Cloudflare](https://dash.cloudflare.com/), open **Workers & Pages → al-murajaah-web**. Check **Custom domains** includes the active `al-murajaah.devs.surf` domain. Keep its DNS and domain mapping intact.
+2. Open **Settings → Builds & deployments → Configure Production deployments** (some dashboard versions group these under **Build → Branch control**). Keep the production branch `main`, uncheck **Enable automatic production branch deployments**, and save.
+3. In the preview branch controls, choose **None** and save. Reopen both controls and verify production automation is unchecked and preview automation is **None**. Keep these disabled before normal pushes. These controls affect automatic builds; they do not remove the current live deployment. See [Cloudflare branch deployment controls](https://developers.cloudflare.com/pages/configuration/branch-build-controls/). The initial workflow setup commit starts with `[CF-Pages-Skip]`, Cloudflare's documented [skip-deployment prefix](https://developers.cloudflare.com/pages/configuration/git-integration/github-integration/#skipping-a-build-via-a-commit-message), so that setup push omits its Git-integration deployment even if dashboard setup is pending. This prefix does not prevent a manually dispatched Actions upload.
+4. Check the existing build settings: no framework, empty build command, repository root, output `dist`. The tracked `dist/index.html`, `dist/app.js` and assets are the ready-to-upload website; there is no build or dependency-install step for the website.
+5. In this website repository, open **Settings → Environments → New environment**, name it exactly `production`, and configure **Deployment branches and tags → Selected branches and tags → Add deployment branch or tag rule → Branch → main**. Reuse the environment if it already exists. The workflow supplies the production URL. Creating this environment does not deploy anything.
+
+### Cloudflare credentials (GitHub secrets only)
+
+Create a custom API token in the Cloudflare dashboard's **API Tokens → Create Token → Custom token → Get started**. A profile token can be created from **My Profile → API Tokens**. Set its permission to **Account → Cloudflare Pages → Edit** and scope **Account Resources → Include → Specific account** to the account that owns `al-murajaah-web`. Give it a descriptive name and an appropriate expiry, then create it. Use this scoped token, not the Global API Key. The Pages permission covers the read-only project preflight and asset deployment; no DNS edit permission is needed. See [Cloudflare's CI credential instructions](https://developers.cloudflare.com/pages/how-to/use-direct-upload-with-continuous-integration/).
+
+Find that same account's **Account ID** in the Cloudflare account dashboard (account menu **Copy account ID**, or the API section of a domain's Overview). Use the Pages-owning account ID, not a Zone ID. You do not need to add a domain or change nameservers to obtain it.
+
+In [repository environments](https://github.com/S-Adnan-11/al-murajaah-web/settings/environments), open `production`, then **Environment secrets → Add environment secret** for each exact name:
+
+| Secret name | Value to enter privately in GitHub |
+| --- | --- |
+| `CLOUDFLARE_API_TOKEN` | The custom Cloudflare API token above. |
+| `CLOUDFLARE_ACCOUNT_ID` | The account ID of the existing Pages project. |
+
+Never paste either value into source, commits, issues, logs or chat. No manually configured GitHub token is needed. No credential belongs in `dist/`, and visitors receive no secrets. Rotate the API token by replacing the environment secret when it expires or is revoked.
+
+### Manually deploy and verify history
+
+1. Review the desired commit on `main`, then open [Actions → Deploy website](https://github.com/S-Adnan-11/al-murajaah-web/actions/workflows/deploy.yml). Select **Run workflow → Use workflow from: main → Run workflow**. Pushes, pull requests and schedules never run this workflow. Selecting another branch skips the deployment job. Queued production runs do not cancel an active upload.
+2. Open the run and note its commit SHA. Checkout uses that exact dispatched SHA, even if `main` moves while the job waits. The workflow runs `node tools/check.mjs` and `node --check dist/app.js`, confirms the checked-out SHA, and checks the existing Pages project's production branch, domain and disabled automatic production/preview settings before uploading `dist/`. Wrangler receives the same SHA through `--commit-hash` and the production branch through `--branch=main`.
+3. Wait for **Deploy to production** and the workflow to finish successfully. In the repository's **Deployments** view (or **Environments → production → View deployments**), open the new `production` entry. Check its commit matches the run SHA, its status reflects the deployment job's result, its log link opens that run, and **View deployment** opens `https://al-murajaah.devs.surf/`. A failed job must show failure, not a synthetic success. See [GitHub environment deployment records](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments#how-environments-relate-to-deployments).
+4. GitHub creates the deployment and status history for the one job referencing `production`. The workflow uses Wrangler directly and never calls the GitHub Deployments API or passes a GitHub token to a deployment action, avoiding duplicate records. Creating the environment or committing this workflow creates no deployment history; only an actual run does. Retrying a deployment is another real attempt. Old Cloudflare Git-integration builds are not backfilled into GitHub history. A failed preflight can have a failed GitHub deployment record even though it uploaded nothing; inspect the job log to see which step failed.
+5. In Cloudflare's existing project's **Deployments** tab, verify the new successful **Production** deployment reports branch `main` and the same commit SHA. Open its unique deployment URL and the custom domain. Hard-refresh the live homepage and `/notices`; verify CSS, images, font, theme controls and the direct Android download link. Fetch `/robots.txt`, `/sitemap.xml` and `/assets/icon-192.png`; check their actual content types and a missing route's HTTP404. Compare the live HTML and asset responses with this commit's `dist/` files and the unique deployment URL. If the website content was unchanged, its appearance should remain unchanged; the matching SHA and successful upload are the deployment evidence. Follow the production checks below for the full response checks.
+
+Do not click **Run workflow** during setup. The first manually requested run creates the first genuine GitHub deployment attempt. Dashboard automation settings are external state, so verify them yourself; the workflow's read-only preflight also refuses to upload if they are enabled.
 
 Cloudflare Pages redirects `/index.html` and `/index` to `/`, and `/notices.html` to `/notices`. The notices canonical and sitemap use the final extensionless URL. The provider hostname serves the same HTML with the production canonical and site name; it is absent from the sitemap. Query-string homepage variants also declare the production root canonical. Do not point canonical, Open Graph, sharing-image or WebSite URLs at a provider hostname or local preview.
 
